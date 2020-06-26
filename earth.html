@@ -1,22 +1,22 @@
-<html>
+<!-- IMPORTANT NOTE -->
+
+<!-- This file is just for testing pourposes before actually implementing 
+changes in mars.html. -->
+
+
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <meta charset=utf-8>
-    <title>Earth Model</title>
-    <style>
-        body {
-            margin: 0;
-        }
-        
-        canvas {
-            width: 100%;
-            height: 100%
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
+
 
 <body>
     <script type="text/javascript" src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
     <script>
         var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -26,25 +26,42 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        var geometry = new THREE.SphereGeometry(1, 32, 32);
-        var material = new THREE.MeshPhongMaterial();
-        // var material = new THREE.MeshBasicMaterial({
-        //     color: 0xA1251B,
-        //     wireframe: true
-        // });
-        material.map = THREE.TextureLoader('images/earthmap1k.jpg');
-        material.bumpMap = THREE.TextureLoader('images/earthbump1k.jpg');
-        material.bumpScale = 0.05;
-        material.specularMap = THREE.TextureLoader('images/earthspec1k.jpg')
-        material.specular = new THREE.Color('grey')
+        scene.add(new THREE.AmbientLight(0x333333));
+        var light = new THREE.DirectionalLight(0xFFFFFF, 1);
+        light.position.set(5, 3, 5);
+        scene.add(light);
+        var earth = new THREE.Mesh(
+            new THREE.SphereGeometry(0.5, 32, 32),
+            new THREE.MeshPhongMaterial({
+                map: THREE.ImageUtils.loadTexture('images/2_no_clouds_4k.jpg'),
+                bumpMap: THREE.ImageUtils.loadTexture('images/elev_bump_4k.jpg'),
+                bumpScale: 0.005,
+                specularMap: THREE.ImageUtils.loadTexture('images/water_4k.png'),
+                specular: new THREE.Color('grey')
+            })
+        );
+        scene.add(earth);
+        var clouds = new THREE.Mesh(
+            new THREE.SphereGeometry(0.503, 32, 32),
+            new THREE.MeshPhongMaterial({
+                map: THREE.ImageUtils.loadTexture('images/fair_clouds_8k.jpg'),
+                transparent: true
+            })
+        );
+        scene.add(clouds);
+        var galaxy = new THREE.Mesh(
+            new THREE.SphereGeometry(90, 64, 64),
+            new THREE.MeshBasicMaterial({
+                map: THREE.ImageUtils.loadTexture('images/galaxy_starfield.png'),
+                side: THREE.BackSide
+            })
+        );
 
-        var earthmesh = new THREE.Mesh(geometry, material);
-
-
-
-        scene.add(earthmesh)
-            //camera.position.z = 3;
+        scene.add(galaxy);
         var update = function() {
+            earth.rotation.y += 0.005
+            clouds.rotation.y += 0.005
+
 
         };
         var render = function() {
@@ -57,12 +74,8 @@
             render();
         };
         GameLoop();
-
-        // updateFcts.push(function(delta, now) {
-        //     cloudMesh.rotation.y += 1 / 8 * delta;
-        //     earthMesh.rotation.y += 1 / 16 * delta;
-        // })
     </script>
+
 </body>
 
 </html>
